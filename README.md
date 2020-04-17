@@ -54,14 +54,14 @@ craft_net = craft.load_craftnet_model()
 
 # perform prediction
 prediction_result = craft.get_prediction(image=image,
-				         				craft_net=craft_net,
-										refine_net=refine_net,
-										text_threshold=0.7,
-										link_threshold=0.4,
-										low_text=0.4,
-										cuda=True,
-										long_size=1280,
-										show_time=True)
+					craft_net=craft_net,
+					refine_net=refine_net,
+					text_threshold=0.7,
+					link_threshold=0.4,
+					low_text=0.4,
+					cuda=True,
+					long_size=1280,
+					show_time=True)
 
 # export detected text regions
 exported_file_paths = craft.export_detected_regions(image_path=image_path,
