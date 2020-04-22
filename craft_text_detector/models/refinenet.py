@@ -17,62 +17,52 @@ class RefineNet(nn.Module):
             nn.Conv2d(34, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True)
+            nn.ReLU(inplace=True),
         )
 
         self.aspp1 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, dilation=6, padding=6),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
             nn.Conv2d(128, 128, kernel_size=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
-            nn.Conv2d(128, 1, kernel_size=1)
+            nn.Conv2d(128, 1, kernel_size=1),
         )
 
         self.aspp2 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, dilation=12, padding=12),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
             nn.Conv2d(128, 128, kernel_size=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
-            nn.Conv2d(128, 1, kernel_size=1)
+            nn.Conv2d(128, 1, kernel_size=1),
         )
 
         self.aspp3 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, dilation=18, padding=18),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
             nn.Conv2d(128, 128, kernel_size=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
-            nn.Conv2d(128, 1, kernel_size=1)
+            nn.Conv2d(128, 1, kernel_size=1),
         )
 
         self.aspp4 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, dilation=24, padding=24),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
             nn.Conv2d(128, 128, kernel_size=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-
-            nn.Conv2d(128, 1, kernel_size=1)
+            nn.Conv2d(128, 1, kernel_size=1),
         )
 
         init_weights(self.last_conv.modules())

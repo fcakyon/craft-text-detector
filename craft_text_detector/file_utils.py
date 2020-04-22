@@ -41,14 +41,19 @@ def list_files(in_path):
         for file in filenames:
             filename, ext = os.path.splitext(file)
             ext = str.lower(ext)
-            if (ext == '.jpg' or ext == '.jpeg' or ext == '.gif' or
-                    ext == '.png' or ext == '.pgm'):
+            if (
+                ext == ".jpg"
+                or ext == ".jpeg"
+                or ext == ".gif"
+                or ext == ".png"
+                or ext == ".pgm"
+            ):
                 img_files.append(os.path.join(dirpath, file))
-            elif ext == '.bmp':
+            elif ext == ".bmp":
                 mask_files.append(os.path.join(dirpath, file))
-            elif ext == '.xml' or ext == '.gt' or ext == '.txt':
+            elif ext == ".xml" or ext == ".gt" or ext == ".txt":
                 gt_files.append(os.path.join(dirpath, file))
-            elif ext == '.zip':
+            elif ext == ".zip":
                 continue
     # img_files.sort()
     # mask_files.sort()
@@ -63,7 +68,9 @@ def rectify_poly(img, poly):
     height = 0
     for k in range(n):
         box = np.float32([poly[k], poly[k + 1], poly[-k - 2], poly[-k - 1]])
-        width += int((np.linalg.norm(box[0] - box[1]) + np.linalg.norm(box[2] - box[3])) / 2)
+        width += int(
+            (np.linalg.norm(box[0] - box[1]) + np.linalg.norm(box[2] - box[3])) / 2
+        )
         height += np.linalg.norm(box[1] - box[2])
     width = int(width)
     height = int(height / n)
@@ -76,21 +83,35 @@ def rectify_poly(img, poly):
 
         # Top triangle
         pts1 = box[:3]
-        pts2 = np.float32([[width_step, 0], [width_step + w - 1, 0], [width_step + w - 1, height - 1]])
+        pts2 = np.float32(
+            [[width_step, 0], [width_step + w - 1, 0], [width_step + w - 1, height - 1]]
+        )
         M = cv2.getAffineTransform(pts1, pts2)
-        warped_img = cv2.warpAffine(img, M, (width, height), borderMode=cv2.BORDER_REPLICATE)
+        warped_img = cv2.warpAffine(
+            img, M, (width, height), borderMode=cv2.BORDER_REPLICATE
+        )
         warped_mask = np.zeros((height, width, 3), dtype=np.uint8)
         warped_mask = cv2.fillConvexPoly(warped_mask, np.int32(pts2), (1, 1, 1))
         output_img[warped_mask == 1] = warped_img[warped_mask == 1]
 
         # Bottom triangle
         pts1 = np.vstack((box[0], box[2:]))
-        pts2 = np.float32([[width_step, 0], [width_step + w - 1, height - 1], [width_step, height - 1]])
+        pts2 = np.float32(
+            [
+                [width_step, 0],
+                [width_step + w - 1, height - 1],
+                [width_step, height - 1],
+            ]
+        )
         M = cv2.getAffineTransform(pts1, pts2)
-        warped_img = cv2.warpAffine(img, M, (width, height), borderMode=cv2.BORDER_REPLICATE)
+        warped_img = cv2.warpAffine(
+            img, M, (width, height), borderMode=cv2.BORDER_REPLICATE
+        )
         warped_mask = np.zeros((height, width, 3), dtype=np.uint8)
         warped_mask = cv2.fillConvexPoly(warped_mask, np.int32(pts2), (1, 1, 1))
-        cv2.line(warped_mask, (width_step, 0), (width_step + w - 1, height - 1), (0, 0, 0), 1)
+        cv2.line(
+            warped_mask, (width_step, 0), (width_step + w - 1, height - 1), (0, 0, 0), 1
+        )
         output_img[warped_mask == 1] = warped_img[warped_mask == 1]
 
         width_step += w
@@ -113,7 +134,7 @@ def crop_poly(image, poly):
     # crop around poly
     res = cv2.bitwise_and(image, image, mask=mask)
     rect = cv2.boundingRect(poly)  # returns (x,y,w,h) of the rect
-    cropped = res[rect[1]: rect[1] + rect[3], rect[0]: rect[0] + rect[2]]
+    cropped = res[rect[1] : rect[1] + rect[3], rect[0] : rect[0] + rect[2]]
 
     return cropped
 
@@ -136,9 +157,9 @@ def export_detected_region(image, poly, file_path, rectify=True):
     cv2.imwrite(file_path, result)
 
 
-def export_detected_regions(image_path, image, regions,
-                            output_dir: str = "output/",
-                            rectify: bool = False):
+def export_detected_regions(
+    image_path, image, regions, output_dir: str = "output/", rectify: bool = False
+):
     """
     Arguments:
         image_path: path to original image
@@ -165,23 +186,22 @@ def export_detected_regions(image_path, image, regions,
         # get export path
         file_path = os.path.join(crops_dir, "crop_" + str(ind) + ".png")
         # export region
-        export_detected_region(image,
-                               poly=region,
-                               file_path=file_path,
-                               rectify=rectify)
+        export_detected_region(image, poly=region, file_path=file_path, rectify=rectify)
         # note exported file path
         exported_file_paths.append(file_path)
 
     return exported_file_paths
 
 
-def export_extra_results(image_path,
-                         image,
-                         regions,
-                         heatmaps,
-                         output_dir='output/',
-                         verticals=None,
-                         texts=None):
+def export_extra_results(
+    image_path,
+    image,
+    regions,
+    heatmaps,
+    output_dir="output/",
+    verticals=None,
+    texts=None,
+):
     """ save text detection result one by one
     Args:
         image_path (str): image file name
@@ -198,14 +218,10 @@ def export_extra_results(image_path,
     filename, file_ext = os.path.splitext(os.path.basename(image_path))
 
     # result directory
-    res_file = os.path.join(output_dir,
-                            filename + '.txt')
-    res_img_file = os.path.join(output_dir,
-                                filename + '.png')
-    text_heatmap_file = os.path.join(output_dir,
-                                     filename + '_text_score_heatmap.png')
-    link_heatmap_file = os.path.join(output_dir,
-                                     filename + '_link_score_heatmap.png')
+    res_file = os.path.join(output_dir, filename + ".txt")
+    res_img_file = os.path.join(output_dir, filename + ".png")
+    text_heatmap_file = os.path.join(output_dir, filename + "_text_score_heatmap.png")
+    link_heatmap_file = os.path.join(output_dir, filename + "_link_score_heatmap.png")
 
     # create output dir
     create_dir(output_dir)
@@ -214,35 +230,42 @@ def export_extra_results(image_path,
     cv2.imwrite(text_heatmap_file, heatmaps["text_score_heatmap"])
     cv2.imwrite(link_heatmap_file, heatmaps["link_score_heatmap"])
 
-    with open(res_file, 'w') as f:
+    with open(res_file, "w") as f:
         for i, region in enumerate(regions):
             region = np.array(region).astype(np.int32).reshape((-1))
-            strResult = ','.join([str(r) for r in region]) + '\r\n'
+            strResult = ",".join([str(r) for r in region]) + "\r\n"
             f.write(strResult)
 
             region = region.reshape(-1, 2)
-            cv2.polylines(image,
-                          [region.reshape((-1, 1, 2))],
-                          True,
-                          color=(0, 0, 255),
-                          thickness=2)
+            cv2.polylines(
+                image,
+                [region.reshape((-1, 1, 2))],
+                True,
+                color=(0, 0, 255),
+                thickness=2,
+            )
 
             if texts is not None:
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.5
-                cv2.putText(image, "{}".format(texts[i]),
-                            (region[0][0] + 1, region[0][1] + 1),
-                            font,
-                            font_scale,
-                            (0, 0, 0),
-                            thickness=1)
-                cv2.putText(image,
-                            "{}".format(texts[i]),
-                            tuple(region[0]),
-                            font,
-                            font_scale,
-                            (0, 255, 255),
-                            thickness=1)
+                cv2.putText(
+                    image,
+                    "{}".format(texts[i]),
+                    (region[0][0] + 1, region[0][1] + 1),
+                    font,
+                    font_scale,
+                    (0, 0, 0),
+                    thickness=1,
+                )
+                cv2.putText(
+                    image,
+                    "{}".format(texts[i]),
+                    tuple(region[0]),
+                    font,
+                    font_scale,
+                    (0, 255, 255),
+                    thickness=1,
+                )
 
     # Save result image
     cv2.imwrite(res_img_file, image)

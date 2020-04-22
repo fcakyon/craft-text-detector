@@ -20,7 +20,7 @@ class double_conv(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(mid_ch, out_ch, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True)
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, x):
@@ -43,10 +43,14 @@ class CRAFT(nn.Module):
 
         num_class = 2
         self.conv_cls = nn.Sequential(
-            nn.Conv2d(32, 32, kernel_size=3, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(32, 32, kernel_size=3, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(32, 16, kernel_size=3, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(16, 16, kernel_size=1), nn.ReLU(inplace=True),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 16, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(16, 16, kernel_size=1),
+            nn.ReLU(inplace=True),
             nn.Conv2d(16, num_class, kernel_size=1),
         )
 
@@ -64,18 +68,21 @@ class CRAFT(nn.Module):
         y = torch.cat([sources[0], sources[1]], dim=1)
         y = self.upconv1(y)
 
-        y = F.interpolate(y, size=sources[2].size()[2:],
-                          mode='bilinear', align_corners=False)
+        y = F.interpolate(
+            y, size=sources[2].size()[2:], mode="bilinear", align_corners=False
+        )
         y = torch.cat([y, sources[2]], dim=1)
         y = self.upconv2(y)
 
-        y = F.interpolate(y, size=sources[3].size()[2:],
-                          mode='bilinear', align_corners=False)
+        y = F.interpolate(
+            y, size=sources[3].size()[2:], mode="bilinear", align_corners=False
+        )
         y = torch.cat([y, sources[3]], dim=1)
         y = self.upconv3(y)
 
-        y = F.interpolate(y, size=sources[4].size()[2:],
-                          mode='bilinear', align_corners=False)
+        y = F.interpolate(
+            y, size=sources[4].size()[2:], mode="bilinear", align_corners=False
+        )
         y = torch.cat([y, sources[4]], dim=1)
         feature = self.upconv4(y)
 
@@ -84,7 +91,7 @@ class CRAFT(nn.Module):
         return y.permute(0, 2, 3, 1), feature
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     model = CRAFT(pretrained=True).cuda()
     output, _ = model(torch.randn(1, 3, 768, 768).cuda())
     print(output.shape)

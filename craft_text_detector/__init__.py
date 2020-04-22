@@ -4,30 +4,33 @@ __version__ = "0.1.8"
 
 from craft_text_detector.imgproc import read_image
 
-from craft_text_detector.file_utils import (export_detected_regions,
-                                            export_extra_results)
+from craft_text_detector.file_utils import export_detected_regions, export_extra_results
 
-from craft_text_detector.predict import (load_craftnet_model,
-                                         load_refinenet_model,
-                                         get_prediction)
+from craft_text_detector.predict import (
+    load_craftnet_model,
+    load_refinenet_model,
+    get_prediction,
+)
 
 # load craft model
 craft_net = load_craftnet_model()
 
 
 # detect texts
-def detect_text(image_path,
-                output_dir=None,
-                rectify=True,
-                export_extra=True,
-                text_threshold=0.7,
-                link_threshold=0.4,
-                low_text=0.4,
-                cuda=False,
-                long_size=1280,
-                show_time=False,
-                refiner=True,
-                crop_type="poly"):
+def detect_text(
+    image_path,
+    output_dir=None,
+    rectify=True,
+    export_extra=True,
+    text_threshold=0.7,
+    link_threshold=0.4,
+    low_text=0.4,
+    cuda=False,
+    long_size=1280,
+    show_time=False,
+    refiner=True,
+    crop_type="poly",
+):
     """
     Arguments:
         image_path: path to the image to be processed
@@ -61,15 +64,17 @@ def detect_text(image_path,
         refine_net = None
 
     # perform prediction
-    prediction_result = get_prediction(image=image,
-                                       craft_net=craft_net,
-                                       refine_net=refine_net,
-                                       text_threshold=text_threshold,
-                                       link_threshold=link_threshold,
-                                       low_text=low_text,
-                                       cuda=cuda,
-                                       long_size=long_size,
-                                       show_time=show_time)
+    prediction_result = get_prediction(
+        image=image,
+        craft_net=craft_net,
+        refine_net=refine_net,
+        text_threshold=text_threshold,
+        link_threshold=link_threshold,
+        low_text=low_text,
+        cuda=cuda,
+        long_size=long_size,
+        show_time=show_time,
+    )
 
     # arange regions
     if crop_type == "box":
@@ -83,20 +88,24 @@ def detect_text(image_path,
     prediction_result["text_crop_paths"] = []
     if output_dir is not None:
         # export detected text regions
-        exported_file_paths = export_detected_regions(image_path=image_path,
-                                                      image=image,
-                                                      regions=regions,
-                                                      output_dir=output_dir,
-                                                      rectify=rectify)
+        exported_file_paths = export_detected_regions(
+            image_path=image_path,
+            image=image,
+            regions=regions,
+            output_dir=output_dir,
+            rectify=rectify,
+        )
         prediction_result["text_crop_paths"] = exported_file_paths
 
         # export heatmap, detection points, box visualization
         if export_extra:
-            export_extra_results(image_path=image_path,
-                                 image=image,
-                                 regions=regions,
-                                 heatmaps=prediction_result["heatmaps"],
-                                 output_dir=output_dir)
+            export_extra_results(
+                image_path=image_path,
+                image=image,
+                regions=regions,
+                heatmaps=prediction_result["heatmaps"],
+                output_dir=output_dir,
+            )
 
     # return prediction results
     return prediction_result

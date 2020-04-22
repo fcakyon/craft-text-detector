@@ -17,7 +17,9 @@ from craft_text_detector.models.craftnet import CRAFT
 from collections import OrderedDict
 
 CRAFT_GDRIVE_URL = "https://drive.google.com/uc?id=1bupFXqT-VU6Jjeul13XP7yx2Sg5IHr4J"
-REFINENET_GDRIVE_URL = "https://drive.google.com/uc?id=1xcE9qpJXp4ofINwXWVhhQIh9S8Z7cuGj"
+REFINENET_GDRIVE_URL = (
+    "https://drive.google.com/uc?id=1xcE9qpJXp4ofINwXWVhhQIh9S8Z7cuGj"
+)
 
 
 def copyStateDict(state_dict):
@@ -39,18 +41,16 @@ def str2bool(v):
 def load_craftnet_model(cuda: bool = False):
     # get craft net path
     home_path = str(Path.home())
-    weight_path = os.path.join(home_path,
-                               ".craft_text_detector",
-                               "weights",
-                               "craft_mlt_25k.pth")
+    weight_path = os.path.join(
+        home_path, ".craft_text_detector", "weights", "craft_mlt_25k.pth"
+    )
     # load craft net
     craft_net = CRAFT()  # initialize
 
     # check if weights are already downloaded, if not download
     url = CRAFT_GDRIVE_URL
     if os.path.isfile(weight_path) is not True:
-        print("Craft text detector weight will be downloaded to {}"
-              .format(weight_path))
+        print("Craft text detector weight will be downloaded to {}".format(weight_path))
 
         file_utils.download(url=url, save_path=weight_path)
 
@@ -62,8 +62,9 @@ def load_craftnet_model(cuda: bool = False):
         craft_net = torch.nn.DataParallel(craft_net)
         cudnn.benchmark = False
     else:
-        craft_net.load_state_dict(copyStateDict(torch.load(weight_path,
-                                                           map_location='cpu')))
+        craft_net.load_state_dict(
+            copyStateDict(torch.load(weight_path, map_location="cpu"))
+        )
     craft_net.eval()
     return craft_net
 
@@ -71,19 +72,18 @@ def load_craftnet_model(cuda: bool = False):
 def load_refinenet_model(cuda: bool = False):
     # get refine net path
     home_path = str(Path.home())
-    weight_path = os.path.join(home_path,
-                               ".craft_text_detector",
-                               "weights",
-                               "craft_refiner_CTW1500.pth")
+    weight_path = os.path.join(
+        home_path, ".craft_text_detector", "weights", "craft_refiner_CTW1500.pth"
+    )
     # load refine net
     from craft_text_detector.models.refinenet import RefineNet
+
     refine_net = RefineNet()  # initialize
 
     # check if weights are already downloaded, if not download
     url = REFINENET_GDRIVE_URL
     if os.path.isfile(weight_path) is not True:
-        print("Craft text refiner weight will be downloaded to {}"
-              .format(weight_path))
+        print("Craft text refiner weight will be downloaded to {}".format(weight_path))
 
         file_utils.download(url=url, save_path=weight_path)
 
@@ -95,22 +95,25 @@ def load_refinenet_model(cuda: bool = False):
         refine_net = torch.nn.DataParallel(refine_net)
         cudnn.benchmark = False
     else:
-        refine_net.load_state_dict(copyStateDict(torch.load(weight_path,
-                                                            map_location='cpu')))
+        refine_net.load_state_dict(
+            copyStateDict(torch.load(weight_path, map_location="cpu"))
+        )
     refine_net.eval()
     return refine_net
 
 
-def get_prediction(image,
-                   craft_net,
-                   refine_net=None,
-                   text_threshold: float = 0.7,
-                   link_threshold: float = 0.4,
-                   low_text: float = 0.4,
-                   cuda: bool = False,
-                   long_size: int = 1280,
-                   poly: bool = True,
-                   show_time: bool = False):
+def get_prediction(
+    image,
+    craft_net,
+    refine_net=None,
+    text_threshold: float = 0.7,
+    link_threshold: float = 0.4,
+    low_text: float = 0.4,
+    cuda: bool = False,
+    long_size: int = 1280,
+    poly: bool = True,
+    show_time: bool = False,
+):
     """
     Arguments:
         image: image to be processed
@@ -137,15 +140,16 @@ def get_prediction(image,
 
     # resize
     img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(
-        image, long_size, interpolation=cv2.INTER_LINEAR)
+        image, long_size, interpolation=cv2.INTER_LINEAR
+    )
     ratio_h = ratio_w = 1 / target_ratio
     resize_time = time.time() - t0
     t0 = time.time()
 
     # preprocessing
     x = imgproc.normalizeMeanVariance(img_resized)
-    x = torch.from_numpy(x).permute(2, 0, 1)    # [h, w, c] to [c, h, w]
-    x = Variable(x.unsqueeze(0))                # [c, h, w] to [b, c, h, w]
+    x = torch.from_numpy(x).permute(2, 0, 1)  # [h, w, c] to [c, h, w]
+    x = Variable(x.unsqueeze(0))  # [c, h, w] to [b, c, h, w]
     if cuda:
         x = x.cuda()
     preprocessing_time = time.time() - t0
@@ -171,8 +175,8 @@ def get_prediction(image,
 
     # Post-processing
     boxes, polys = craft_utils.getDetBoxes(
-        score_text, score_link, text_threshold, link_threshold, low_text,
-        poly)
+        score_text, score_link, text_threshold, link_threshold, low_text, poly
+    )
 
     # coordinate adjustment
     boxes = craft_utils.adjustResultCoordinates(boxes, ratio_w, ratio_h)
@@ -207,15 +211,25 @@ def get_prediction(image,
         "preprocessing_time": preprocessing_time,
         "craftnet_time": craftnet_time,
         "refinenet_time": refinenet_time,
-        "postprocess_time": postprocess_time}
+        "postprocess_time": postprocess_time,
+    }
 
     if show_time:
-        print("\ninfer/postproc time : {:.3f}/{:.3f}".format(refinenet_time + refinenet_time, postprocess_time))
+        print(
+            "\ninfer/postproc time : {:.3f}/{:.3f}".format(
+                refinenet_time + refinenet_time, postprocess_time
+            )
+        )
 
-    return {"boxes": boxes,
-            "boxes_as_ratios": boxes_as_ratio,
-            "polys": polys,
-            "polys_as_ratios": polys_as_ratio,
-            "heatmaps": {"text_score_heatmap": text_score_heatmap,
-                         "link_score_heatmap": link_score_heatmap},
-            "times": times}
+    return {
+        "boxes": boxes,
+        "boxes_as_ratios": boxes_as_ratio,
+        "polys": polys,
+        "polys_as_ratios": polys_as_ratio,
+        "heatmaps": {
+            "text_score_heatmap": text_score_heatmap,
+            "link_score_heatmap": link_score_heatmap,
+        },
+        "times": times,
+    }
+
