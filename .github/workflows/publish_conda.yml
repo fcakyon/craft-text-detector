@@ -8,7 +8,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - name: free disk space
       run: |
         sudo swapoff -a
@@ -17,7 +17,7 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
     - name: publish-to-conda
-      uses: fcakyon/conda-package-publish-action@master
+      uses: fcakyon/conda-publish-action@v1.3
       with:
         subdir: 'conda'
         anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
