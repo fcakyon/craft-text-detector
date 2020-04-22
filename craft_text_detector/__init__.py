@@ -48,7 +48,8 @@ def detect_text(image_path,
          "boxes_as_ratios": list of coords of points of predicted boxes as ratios of image size,
          "polys_as_ratios": list of coords of points of predicted polys as ratios of image size,
          "heatmaps": visualization of the detected characters/links,
-         "text_crop_paths": list of paths of the exported text boxes/polys}
+         "text_crop_paths": list of paths of the exported text boxes/polys,
+         "times": elapsed times of the sub modules, in seconds}
     """
     # load image
     image = read_image(image_path)

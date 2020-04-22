@@ -109,7 +109,6 @@ def get_prediction(image,
                    low_text: float = 0.4,
                    cuda: bool = False,
                    long_size: int = 1280,
-                   mag_ratio: float = 1.5,
                    poly: bool = True,
                    show_time: bool = False):
     """
@@ -117,7 +116,7 @@ def get_prediction(image,
         image: image to be processed
         output_dir: path to the results to be exported
         craft_net: craft net model
-		refine_net: refine net model
+        refine_net: refine net model
         text_threshold: text confidence threshold
         link_threshold: link confidence threshold
         low_text: text low-bound score
@@ -131,7 +130,8 @@ def get_prediction(image,
          "boxes": list of coords of points of predicted boxes,
          "boxes_as_ratios": list of coords of points of predicted boxes as ratios of image size,
          "polys_as_ratios": list of coords of points of predicted polys as ratios of image size,
-         "heatmaps": visualizations of the detected characters/links}
+         "heatmaps": visualizations of the detected characters/links,
+         "times": elapsed times of the sub modules, in seconds}
     """
     t0 = time.time()
 
@@ -139,6 +139,8 @@ def get_prediction(image,
     img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(
         image, long_size, interpolation=cv2.INTER_LINEAR)
     ratio_h = ratio_w = 1 / target_ratio
+    resize_time = time.time() - t0
+    t0 = time.time()
 
     # preprocessing
     x = imgproc.normalizeMeanVariance(img_resized)
@@ -146,10 +148,14 @@ def get_prediction(image,
     x = Variable(x.unsqueeze(0))                # [c, h, w] to [b, c, h, w]
     if cuda:
         x = x.cuda()
+    preprocessing_time = time.time() - t0
+    t0 = time.time()
 
     # forward pass
     with torch.no_grad():
         y, feature = craft_net(x)
+    craftnet_time = time.time() - t0
+    t0 = time.time()
 
     # make score and link map
     score_text = y[0, :, :, 0].cpu().data.numpy()
@@ -160,9 +166,8 @@ def get_prediction(image,
         with torch.no_grad():
             y_refiner = refine_net(y, feature)
         score_link = y_refiner[0, :, :, 0].cpu().data.numpy()
-
-    t0 = time.time() - t0
-    t1 = time.time()
+    refinenet_time = time.time() - t0
+    t0 = time.time()
 
     # Post-processing
     boxes, polys = craft_utils.getDetBoxes(
@@ -175,15 +180,6 @@ def get_prediction(image,
     for k in range(len(polys)):
         if polys[k] is None:
             polys[k] = boxes[k]
-
-    t1 = time.time() - t1
-
-    # render results (optional)
-    text_score_heatmap = imgproc.cvt2HeatmapImg(score_text)
-    link_score_heatmap = imgproc.cvt2HeatmapImg(score_link)
-
-    if show_time:
-        print("\ninfer/postproc time : {:.3f}/{:.3f}".format(t0, t1))
 
     # get image size
     img_height = image.shape[0]
@@ -201,9 +197,25 @@ def get_prediction(image,
         polys_as_ratio.append(poly / [img_width, img_height])
     polys_as_ratio = np.array(polys_as_ratio)
 
+    text_score_heatmap = imgproc.cvt2HeatmapImg(score_text)
+    link_score_heatmap = imgproc.cvt2HeatmapImg(score_link)
+
+    postprocess_time = time.time() - t0
+
+    times = {
+        "resize_time": resize_time,
+        "preprocessing_time": preprocessing_time,
+        "craftnet_time": craftnet_time,
+        "refinenet_time": refinenet_time,
+        "postprocess_time": postprocess_time}
+
+    if show_time:
+        print("\ninfer/postproc time : {:.3f}/{:.3f}".format(refinenet_time + refinenet_time, postprocess_time))
+
     return {"boxes": boxes,
             "boxes_as_ratios": boxes_as_ratio,
             "polys": polys,
             "polys_as_ratios": polys_as_ratio,
             "heatmaps": {"text_score_heatmap": text_score_heatmap,
-                         "link_score_heatmap": link_score_heatmap}}
+                         "link_score_heatmap": link_score_heatmap},
+            "times": times}
