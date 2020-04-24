@@ -218,8 +218,8 @@ def export_extra_results(
     filename, file_ext = os.path.splitext(os.path.basename(image_path))
 
     # result directory
-    res_file = os.path.join(output_dir, filename + ".txt")
-    res_img_file = os.path.join(output_dir, filename + ".png")
+    res_file = os.path.join(output_dir, filename + "_text_detection.txt")
+    res_img_file = os.path.join(output_dir, filename + "_text_detection.png")
     text_heatmap_file = os.path.join(output_dir, filename + "_text_score_heatmap.png")
     link_heatmap_file = os.path.join(output_dir, filename + "_link_score_heatmap.png")
 
@@ -268,4 +268,4 @@ def export_extra_results(
                 )
 
     # Save result image
-    cv2.imwrite(res_img_file, image)
+    cv2.imwrite(res_img_file, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
