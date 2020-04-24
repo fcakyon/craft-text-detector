@@ -1,5 +1,5 @@
 [![PyPI version](https://badge.fury.io/py/craft-text-detector.svg)](https://badge.fury.io/py/craft-text-detector)
-[![Conda version](https://anaconda.org/fcakyon/craft-text-detector/badges/version.svg)](https://anaconda.org/fcakyon/craft-text-detector)
+[![Conda version](https://anaconda.org/fcakyon/craft-text-detector/badges/version.sv)](https://anaconda.org/fcakyon/craft-text-detector)
 [![CI](https://github.com/fcakyon/craft-text-detector/workflows/CI/badge.svg)](https://github.com/fcakyon/craft-text-detector/actions?query=event%3Apush+branch%3Amaster+is%3Acompleted+workflow%3ACI)
 
 
