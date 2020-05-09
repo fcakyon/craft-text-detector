@@ -54,14 +54,20 @@ def detect_text(
          "text_crop_paths": list of paths of the exported text boxes/polys,
          "times": elapsed times of the sub modules, in seconds}
     """
+    global craft_net
+
     # load image
     image = read_image(image_path)
 
     # load refiner if required
     if refiner:
-        refine_net = load_refinenet_model()
+        refine_net = load_refinenet_model(cuda)
     else:
         refine_net = None
+
+    # load craftnet again if cuda is turned on
+    if cuda:
+        craft_net = load_craftnet_model(True)
 
     # perform prediction
     prediction_result = get_prediction(
