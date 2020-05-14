@@ -1,23 +1,101 @@
-"""
-Copyright (c) 2019-present NAVER Corp.
-MIT License
-"""
+import craft_text_detector.torch_utils as torch_utils
+import craft_text_detector.file_utils as file_utils
 
-# -*- coding: utf-8 -*-
+from collections import OrderedDict
+from pathlib import Path
 import numpy as np
 import cv2
 import math
+import os
 
-""" auxilary functions """
+
+CRAFT_GDRIVE_URL = "https://drive.google.com/uc?id=1bupFXqT-VU6Jjeul13XP7yx2Sg5IHr4J"
+REFINENET_GDRIVE_URL = (
+    "https://drive.google.com/uc?id=1xcE9qpJXp4ofINwXWVhhQIh9S8Z7cuGj"
+)
+
+
 # unwarp corodinates
-
-
 def warpCoord(Minv, pt):
     out = np.matmul(Minv, (pt[0], pt[1], 1))
     return np.array([out[0] / out[2], out[1] / out[2]])
 
 
-""" end of auxilary functions """
+def copyStateDict(state_dict):
+    if list(state_dict.keys())[0].startswith("module"):
+        start_idx = 1
+    else:
+        start_idx = 0
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = ".".join(k.split(".")[start_idx:])
+        new_state_dict[name] = v
+    return new_state_dict
+
+
+def load_craftnet_model(cuda: bool = False):
+    # get craft net path
+    home_path = str(Path.home())
+    weight_path = os.path.join(
+        home_path, ".craft_text_detector", "weights", "craft_mlt_25k.pth"
+    )
+    # load craft net
+    from craft_text_detector.models.craftnet import CraftNet
+    craft_net = CraftNet()  # initialize
+
+    # check if weights are already downloaded, if not download
+    url = CRAFT_GDRIVE_URL
+    if os.path.isfile(weight_path) is not True:
+        print("Craft text detector weight will be downloaded to {}".format(weight_path))
+
+        file_utils.download(url=url, save_path=weight_path)
+
+    # arange device
+    if cuda:
+        craft_net.load_state_dict(copyStateDict(torch_utils.load(weight_path)))
+
+        craft_net = craft_net.cuda()
+        craft_net = torch_utils.DataParallel(craft_net)
+        torch_utils.cudnn_benchmark = False
+    else:
+        craft_net.load_state_dict(
+            copyStateDict(torch_utils.load(weight_path, map_location="cpu"))
+        )
+    craft_net.eval()
+    return craft_net
+
+
+def load_refinenet_model(cuda: bool = False):
+    # get refine net path
+    home_path = str(Path.home())
+    weight_path = os.path.join(
+        home_path, ".craft_text_detector", "weights", "craft_refiner_CTW1500.pth"
+    )
+    # load refine net
+    from craft_text_detector.models.refinenet import RefineNet
+
+    refine_net = RefineNet()  # initialize
+
+    # check if weights are already downloaded, if not download
+    url = REFINENET_GDRIVE_URL
+    if os.path.isfile(weight_path) is not True:
+        print("Craft text refiner weight will be downloaded to {}".format(weight_path))
+
+        file_utils.download(url=url, save_path=weight_path)
+
+    # arange device
+    if cuda:
+        refine_net.load_state_dict(copyStateDict(torch_utils.load(weight_path)))
+
+        refine_net = refine_net.cuda()
+        refine_net = torch_utils.DataParallel(refine_net)
+        torch_utils.cudnn_benchmark = False
+    else:
+        refine_net.load_state_dict(
+            copyStateDict(torch_utils.load(weight_path, map_location="cpu"))
+        )
+    refine_net.eval()
+    return refine_net
 
 
 def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text):

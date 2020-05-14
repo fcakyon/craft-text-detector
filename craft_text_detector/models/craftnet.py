@@ -28,9 +28,9 @@ class double_conv(nn.Module):
         return x
 
 
-class CRAFT(nn.Module):
+class CraftNet(nn.Module):
     def __init__(self, pretrained=False, freeze=False):
-        super(CRAFT, self).__init__()
+        super(CraftNet, self).__init__()
 
         """ Base network """
         self.basenet = vgg16_bn(pretrained, freeze)
@@ -92,6 +92,6 @@ class CRAFT(nn.Module):
 
 
 if __name__ == "__main__":
-    model = CRAFT(pretrained=True).cuda()
+    model = CraftNet(pretrained=True).cuda()
     output, _ = model(torch.randn(1, 3, 768, 768).cuda())
     print(output.shape)
