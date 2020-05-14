@@ -4,9 +4,9 @@ import time
 import cv2
 import numpy as np
 
-import craft_text_detector.torch_utils as torch_utils
 import craft_text_detector.craft_utils as craft_utils
-import craft_text_detector.imgproc as imgproc
+import craft_text_detector.image_utils as image_utils
+import craft_text_detector.torch_utils as torch_utils
 
 
 def get_prediction(
@@ -44,7 +44,7 @@ def get_prediction(
     t0 = time.time()
 
     # resize
-    img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(
+    img_resized, target_ratio, size_heatmap = image_utils.resize_aspect_ratio(
         image, long_size, interpolation=cv2.INTER_LINEAR
     )
     ratio_h = ratio_w = 1 / target_ratio
@@ -52,7 +52,7 @@ def get_prediction(
     t0 = time.time()
 
     # preprocessing
-    x = imgproc.normalizeMeanVariance(img_resized)
+    x = image_utils.normalizeMeanVariance(img_resized)
     x = torch_utils.from_numpy(x).permute(2, 0, 1)  # [h, w, c] to [c, h, w]
     x = torch_utils.Variable(x.unsqueeze(0))  # [c, h, w] to [b, c, h, w]
     if cuda:
@@ -106,8 +106,8 @@ def get_prediction(
         polys_as_ratio.append(poly / [img_width, img_height])
     polys_as_ratio = np.array(polys_as_ratio)
 
-    text_score_heatmap = imgproc.cvt2HeatmapImg(score_text)
-    link_score_heatmap = imgproc.cvt2HeatmapImg(score_link)
+    text_score_heatmap = image_utils.cvt2HeatmapImg(score_text)
+    link_score_heatmap = image_utils.cvt2HeatmapImg(score_link)
 
     postprocess_time = time.time() - t0
 
