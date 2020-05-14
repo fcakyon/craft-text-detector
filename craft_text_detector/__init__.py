@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
-__version__ = "0.3.0"
-
-import craft_text_detector.imgproc as imgproc
-import craft_text_detector.predict as predict
 import craft_text_detector.craft_utils as craft_utils
 import craft_text_detector.file_utils as file_utils
+import craft_text_detector.image_utils as image_utils
+import craft_text_detector.predict as predict
+
+__version__ = "0.3.0"
 
 
 __all__ = [
@@ -18,7 +18,7 @@ __all__ = [
     "Craft",
 ]
 
-read_image = imgproc.read_image
+read_image = image_utils.read_image
 load_craftnet_model = craft_utils.load_craftnet_model
 load_refinenet_model = craft_utils.load_refinenet_model
 get_prediction = predict.get_prediction

@@ -1,13 +1,13 @@
-import craft_text_detector.torch_utils as torch_utils
-import craft_text_detector.file_utils as file_utils
-
-from collections import OrderedDict
-from pathlib import Path
-import numpy as np
-import cv2
 import math
 import os
+from collections import OrderedDict
+from pathlib import Path
 
+import cv2
+import numpy as np
+
+import craft_text_detector.file_utils as file_utils
+import craft_text_detector.torch_utils as torch_utils
 
 CRAFT_GDRIVE_URL = "https://drive.google.com/uc?id=1bupFXqT-VU6Jjeul13XP7yx2Sg5IHr4J"
 REFINENET_GDRIVE_URL = (
@@ -41,6 +41,7 @@ def load_craftnet_model(cuda: bool = False):
     )
     # load craft net
     from craft_text_detector.models.craftnet import CraftNet
+
     craft_net = CraftNet()  # initialize
 
     # check if weights are already downloaded, if not download
