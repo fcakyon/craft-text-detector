@@ -60,6 +60,7 @@ from craft_text_detector import (
     get_prediction,
     export_detected_regions,
     export_extra_results,
+    empty_cuda_cache
 )
 
 # set image path and export folder directory
@@ -75,31 +76,34 @@ craft_net = load_craftnet_model(cuda=True)
 
 # perform prediction
 prediction_result = get_prediction(
-	image=image,
-	craft_net=craft_net,
-	refine_net=refine_net,
-	text_threshold=0.7,
-	link_threshold=0.4,
-	low_text=0.4,
-	cuda=True,
-	long_size=1280
+    image=image,
+    craft_net=craft_net,
+    refine_net=refine_net,
+    text_threshold=0.7,
+    link_threshold=0.4,
+    low_text=0.4,
+    cuda=True,
+    long_size=1280
 )
 
 # export detected text regions
 exported_file_paths = export_detected_regions(
-	image_path=image_path,
-	image=image,
-	regions=prediction_result["boxes"],
-	output_dir=output_dir,
-	rectify=True
+    image_path=image_path,
+    image=image,
+    regions=prediction_result["boxes"],
+    output_dir=output_dir,
+    rectify=True
 )
 
 # export heatmap, detection points, box visualization
 export_extra_results(
-	image_path=image_path,
-	image=image,
-	regions=prediction_result["boxes"],
-	heatmaps=prediction_result["heatmaps"],
-	output_dir=output_dir
+    image_path=image_path,
+    image=image,
+    regions=prediction_result["boxes"],
+    heatmaps=prediction_result["heatmaps"],
+    output_dir=output_dir
 )
+
+# unload models from gpu
+empty_cuda_cache()
 ```
