@@ -31,36 +31,50 @@ pip install craft-text-detector
 ### Basic Usage
 
 ```python
-# import package
-import craft_text_detector as craft
+# import Craft class
+from craft_text_detector import Craft
 
 # set image path and export folder directory
 image_path = 'figures/idcard.png'
 output_dir = 'outputs/'
 
+# create a craft instance
+craft = Craft(output_dir=output_dir, crop_type="poly", cuda=False)
+
 # apply craft text detection and export detected regions to output directory
-prediction_result = craft.detect_text(image_path, output_dir, crop_type="poly", cuda=False)
+prediction_result = craft.detect_text(image_path)
+
+# unload models from ram/gpu
+craft.unload_craftnet_model()
+craft.unload_refinenet_model()
 ```
 
 ### Advanced Usage
 
 ```python
-# import package
-import craft_text_detector as craft
+# import craft functions
+from craft_text_detector import (
+    read_image,
+    load_craftnet_model,
+    load_refinenet_model,
+    get_prediction,
+    export_detected_regions,
+    export_extra_results,
+)
 
 # set image path and export folder directory
 image_path = 'figures/idcard.png'
 output_dir = 'outputs/'
 
 # read image
-image = craft.read_image(image_path)
+image = read_image(image_path)
 
 # load models
-refine_net = craft.load_refinenet_model()
-craft_net = craft.load_craftnet_model()
+refine_net = load_refinenet_model(cuda=True)
+craft_net = load_craftnet_model(cuda=True)
 
 # perform prediction
-prediction_result = craft.get_prediction(
+prediction_result = get_prediction(
 	image=image,
 	craft_net=craft_net,
 	refine_net=refine_net,
@@ -68,12 +82,11 @@ prediction_result = craft.get_prediction(
 	link_threshold=0.4,
 	low_text=0.4,
 	cuda=True,
-	long_size=1280,
-	show_time=True
+	long_size=1280
 )
 
 # export detected text regions
-exported_file_paths = craft.export_detected_regions(
+exported_file_paths = export_detected_regions(
 	image_path=image_path,
 	image=image,
 	regions=prediction_result["boxes"],
@@ -82,7 +95,7 @@ exported_file_paths = craft.export_detected_regions(
 )
 
 # export heatmap, detection points, box visualization
-craft.export_extra_results(
+export_extra_results(
 	image_path=image_path,
 	image=image,
 	regions=prediction_result["boxes"],
