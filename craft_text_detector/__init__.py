@@ -4,8 +4,9 @@ import craft_text_detector.craft_utils as craft_utils
 import craft_text_detector.file_utils as file_utils
 import craft_text_detector.image_utils as image_utils
 import craft_text_detector.predict as predict
+import craft_text_detector.torch_utils as torch_utils
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 __all__ = [
@@ -15,6 +16,7 @@ __all__ = [
     "get_prediction",
     "export_detected_regions",
     "export_extra_results",
+    "empty_cuda_cache",
     "Craft",
 ]
 
@@ -24,6 +26,7 @@ load_refinenet_model = craft_utils.load_refinenet_model
 get_prediction = predict.get_prediction
 export_detected_regions = file_utils.export_detected_regions
 export_extra_results = file_utils.export_extra_results
+empty_cuda_cache = torch_utils.empty_cuda_cache
 
 
 class Craft:
@@ -90,14 +93,14 @@ class Craft:
         Unloads craftnet model
         """
         self.craft_net = None
-        craft_utils.empty_cuda_cache()
+        empty_cuda_cache()
 
     def unload_refinenet_model(self):
         """
         Unloads refinenet model
         """
         self.refine_net = None
-        craft_utils.empty_cuda_cache()
+        empty_cuda_cache()
 
     def detect_text(self, image_path):
         """
