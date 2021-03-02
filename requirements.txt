@@ -1,6 +1,6 @@
 torch>=0.4.1
 torchvision>=0.2.1
-opencv-python==3.4.8.29
+opencv-python>=3.4.8.29
 scipy>=1.3.2
 gdown>=3.10.1
 dataclasses; python_version<"3.7"
