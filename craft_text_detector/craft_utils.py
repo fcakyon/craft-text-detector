@@ -2,6 +2,7 @@ import math
 import os
 from collections import OrderedDict
 from pathlib import Path
+from typing import Optional, Union
 
 import cv2
 import numpy as np
@@ -33,12 +34,23 @@ def copyStateDict(state_dict):
     return new_state_dict
 
 
-def load_craftnet_model(cuda: bool = False):
+def load_craftnet_model(
+        cuda: bool = False,
+        weight_path: Optional[Union[str, Path]] = None
+):
     # get craft net path
-    home_path = str(Path.home())
-    weight_path = os.path.join(
-        home_path, ".craft_text_detector", "weights", "craft_mlt_25k.pth"
-    )
+    if weight_path is None:
+        home_path = str(Path.home())
+        weight_path = Path(
+            home_path,
+            ".craft_text_detector",
+            "weights",
+            "craft_mlt_25k.pth"
+        )
+    weight_path = Path(weight_path).resolve()
+    weight_path.parent.mkdir(exist_ok=True, parents=True)
+    weight_path = str(weight_path)
+
     # load craft net
     from craft_text_detector.models.craftnet import CraftNet
 
@@ -46,7 +58,7 @@ def load_craftnet_model(cuda: bool = False):
 
     # check if weights are already downloaded, if not download
     url = CRAFT_GDRIVE_URL
-    if os.path.isfile(weight_path) is not True:
+    if not os.path.isfile(weight_path):
         print("Craft text detector weight will be downloaded to {}".format(weight_path))
 
         file_utils.download(url=url, save_path=weight_path)
@@ -66,12 +78,23 @@ def load_craftnet_model(cuda: bool = False):
     return craft_net
 
 
-def load_refinenet_model(cuda: bool = False):
+def load_refinenet_model(
+        cuda: bool = False,
+        weight_path: Optional[Union[str, Path]] = None
+):
     # get refine net path
-    home_path = str(Path.home())
-    weight_path = os.path.join(
-        home_path, ".craft_text_detector", "weights", "craft_refiner_CTW1500.pth"
-    )
+    if weight_path is None:
+        home_path = Path.home()
+        weight_path = Path(
+            home_path,
+            ".craft_text_detector",
+            "weights",
+            "craft_refiner_CTW1500.pth"
+        )
+    weight_path = Path(weight_path).resolve()
+    weight_path.parent.mkdir(exist_ok=True, parents=True)
+    weight_path = str(weight_path)
+
     # load refine net
     from craft_text_detector.models.refinenet import RefineNet
 
@@ -79,7 +102,7 @@ def load_refinenet_model(cuda: bool = False):
 
     # check if weights are already downloaded, if not download
     url = REFINENET_GDRIVE_URL
-    if os.path.isfile(weight_path) is not True:
+    if not os.path.isfile(weight_path):
         print("Craft text refiner weight will be downloaded to {}".format(weight_path))
 
         file_utils.download(url=url, save_path=weight_path)
