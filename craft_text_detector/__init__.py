@@ -1,12 +1,14 @@
 from __future__ import absolute_import
 
+import os
+
 import craft_text_detector.craft_utils as craft_utils
 import craft_text_detector.file_utils as file_utils
 import craft_text_detector.image_utils as image_utils
 import craft_text_detector.predict as predict
 import craft_text_detector.torch_utils as torch_utils
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 
 
 __all__ = [
@@ -45,7 +47,6 @@ class Craft:
     ):
         """
         Arguments:
-            image_path: path to the image to be processed
             output_dir: path to the results to be exported
             rectify: rectify detected polygon by affine transform
             export_extra: export heatmap, detection points, box visualization
@@ -102,21 +103,26 @@ class Craft:
         self.refine_net = None
         empty_cuda_cache()
 
-    def detect_text(self, image_path):
+    def detect_text(self, image, image_path=None):
         """
         Arguments:
-            image_path: path to the image to be processed
+            image: path to the image to be processed or numpy array or PIL image
+
         Output:
-            {"masks": lists of predicted masks 2d as bool array,
-            "boxes": list of coords of points of predicted boxes,
-            "boxes_as_ratios": list of coords of points of predicted boxes as ratios of image size,
-            "polys_as_ratios": list of coords of points of predicted polys as ratios of image size,
-            "heatmaps": visualization of the detected characters/links,
-            "text_crop_paths": list of paths of the exported text boxes/polys,
-            "times": elapsed times of the sub modules, in seconds}
+            {
+                "masks": lists of predicted masks 2d as bool array,
+                "boxes": list of coords of points of predicted boxes,
+                "boxes_as_ratios": list of coords of points of predicted boxes as ratios of image size,
+                "polys_as_ratios": list of coords of points of predicted polys as ratios of image size,
+                "heatmaps": visualization of the detected characters/links,
+                "text_crop_paths": list of paths of the exported text boxes/polys,
+                "times": elapsed times of the sub modules, in seconds
+            }
         """
-        # load image
-        image = read_image(image_path)
+
+        if image_path is not None:
+            print("Argument 'image_path' is deprecated, use 'image' instead.")
+            image = image_path
 
         # perform prediction
         prediction_result = get_prediction(
@@ -142,10 +148,14 @@ class Craft:
         prediction_result["text_crop_paths"] = []
         if self.output_dir is not None:
             # export detected text regions
+            if type(image) == str:
+                file_name, file_ext = os.path.splitext(os.path.basename(image))
+            else:
+                file_name = "image"
             exported_file_paths = export_detected_regions(
-                image_path=image_path,
                 image=image,
                 regions=regions,
+                file_name=file_name,
                 output_dir=self.output_dir,
                 rectify=self.rectify,
             )
@@ -154,10 +164,10 @@ class Craft:
             # export heatmap, detection points, box visualization
             if self.export_extra:
                 export_extra_results(
-                    image_path=image_path,
                     image=image,
                     regions=regions,
                     heatmaps=prediction_result["heatmaps"],
+                    file_name=file_name,
                     output_dir=self.output_dir,
                 )
 

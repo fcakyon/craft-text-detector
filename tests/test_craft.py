@@ -1,4 +1,5 @@
 import unittest
+
 from craft_text_detector import Craft
 
 
@@ -75,7 +76,7 @@ class TestCraftTextDetector(unittest.TestCase):
             crop_type="poly",
         )
         # detect text
-        prediction_result = craft.detect_text(image_path=self.image_path)
+        prediction_result = craft.detect_text(image=self.image_path)
 
         self.assertEqual(len(prediction_result["boxes"]), 52)
         self.assertEqual(len(prediction_result["boxes"][0]), 4)
@@ -96,7 +97,7 @@ class TestCraftTextDetector(unittest.TestCase):
             crop_type="poly",
         )
         # detect text
-        prediction_result = craft.detect_text(image_path=self.image_path)
+        prediction_result = craft.detect_text(image=self.image_path)
 
         self.assertEqual(len(prediction_result["boxes"]), 19)
         self.assertEqual(len(prediction_result["boxes"][0]), 4)
@@ -117,7 +118,7 @@ class TestCraftTextDetector(unittest.TestCase):
             crop_type="box",
         )
         # detect text
-        prediction_result = craft.detect_text(image_path=self.image_path)
+        prediction_result = craft.detect_text(image=self.image_path)
 
         self.assertEqual(len(prediction_result["boxes"]), 52)
         self.assertEqual(len(prediction_result["boxes"][0]), 4)
@@ -138,7 +139,7 @@ class TestCraftTextDetector(unittest.TestCase):
             crop_type="box",
         )
         # detect text
-        prediction_result = craft.detect_text(image_path=self.image_path)
+        prediction_result = craft.detect_text(image=self.image_path)
 
         self.assertEqual(len(prediction_result["boxes"]), 19)
         self.assertEqual(len(prediction_result["boxes"][0]), 4)
