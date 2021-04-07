@@ -36,14 +36,14 @@ pip install craft-text-detector
 from craft_text_detector import Craft
 
 # set image path and export folder directory
-image_path = 'figures/idcard.png'
+image = 'figures/idcard.png' # can be filepath, PIL image or numpy array
 output_dir = 'outputs/'
 
 # create a craft instance
 craft = Craft(output_dir=output_dir, crop_type="poly", cuda=False)
 
 # apply craft text detection and export detected regions to output directory
-prediction_result = craft.detect_text(image_path)
+prediction_result = craft.detect_text(image)
 
 # unload models from ram/gpu
 craft.unload_craftnet_model()
@@ -65,11 +65,11 @@ from craft_text_detector import (
 )
 
 # set image path and export folder directory
-image_path = 'figures/idcard.png'
+image = 'figures/idcard.png' # can be filepath, PIL image or numpy array
 output_dir = 'outputs/'
 
 # read image
-image = read_image(image_path)
+image = read_image(image)
 
 # load models
 refine_net = load_refinenet_model(cuda=True)
