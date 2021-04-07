@@ -89,7 +89,6 @@ prediction_result = get_prediction(
 
 # export detected text regions
 exported_file_paths = export_detected_regions(
-    image_path=image_path,
     image=image,
     regions=prediction_result["boxes"],
     output_dir=output_dir,
@@ -98,7 +97,6 @@ exported_file_paths = export_detected_regions(
 
 # export heatmap, detection points, box visualization
 export_extra_results(
-    image_path=image_path,
     image=image,
     regions=prediction_result["boxes"],
     heatmaps=prediction_result["heatmaps"],
