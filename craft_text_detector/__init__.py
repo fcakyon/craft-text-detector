@@ -102,10 +102,10 @@ class Craft:
         self.refine_net = None
         empty_cuda_cache()
 
-    def detect_text(self, image_path):
+    def detect_text(self, src):
         """
         Arguments:
-            image_path: path to the image to be processed
+            src: path to the image to be processed or numpy array or PIL image
         Output:
             {"masks": lists of predicted masks 2d as bool array,
             "boxes": list of coords of points of predicted boxes,
@@ -115,8 +115,8 @@ class Craft:
             "text_crop_paths": list of paths of the exported text boxes/polys,
             "times": elapsed times of the sub modules, in seconds}
         """
-        # load image
-        image = read_image(image_path)
+        # load image and convert to valid format
+        image = read_image(src)
 
         # perform prediction
         prediction_result = get_prediction(

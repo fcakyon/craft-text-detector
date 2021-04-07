@@ -7,14 +7,32 @@ import cv2
 import numpy as np
 
 
-def read_image(img_file):
-    img = cv2.imread(img_file)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # following two cases are not explained in the original repo
-    if img.shape[0] == 2:
-        img = img[0]
-    if img.shape[2] == 4:
-        img = img[:, :, :3]
+def read_image(src):
+    """
+    Modify from EasyOCR
+    """
+    if type(src) == str:
+        img = cv2.imread(src)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+         # following two cases are not explained in the original repo
+        if img.shape[0] == 2:
+            img = img[0]
+        if img.shape[2] == 4:
+            img = img[:, :, :3]
+    
+    elif type(src) == bytes:
+        nparr = np.frombuffer(src, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    elif type(src) == np.ndarray:
+        if len(src.shape) == 2: # grayscale
+            img = cv2.cvtColor(src, cv2.COLOR_GRAY2BGR)
+        elif len(src.shape) == 3 and src.shape[2] == 3: # BGRscale
+            img = src
+        elif len(src.shape) == 3 and src.shape[2] == 4: # RGBAscale
+            img = src[:,:,:3]
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     return img
 
