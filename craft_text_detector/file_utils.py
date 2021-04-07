@@ -5,6 +5,8 @@ import cv2
 import gdown
 import numpy as np
 
+from craft_text_detector.image_utils import read_image
+
 
 def download(url: str, save_path: str):
     """
@@ -158,21 +160,26 @@ def export_detected_region(image, poly, file_path, rectify=True):
 
 
 def export_detected_regions(
-    image_path, image, regions, output_dir: str = "output/", rectify: bool = False
+    image,
+    regions,
+    file_name: str = "image",
+    output_dir: str = "output/",
+    rectify: bool = False,
 ):
     """
     Arguments:
-        image_path: path to original image
-        image: full/original image
+        image: path to the image to be processed or numpy array or PIL image
         regions: list of bboxes or polys
+        file_name (str): export image file name
         output_dir: folder to be exported
         rectify: rectify detected polygon by affine transform
     """
+
+    # read/convert image
+    image = read_image(image)
+
     # deepcopy image so that original is not altered
     image = copy.deepcopy(image)
-
-    # get file name
-    file_name, file_ext = os.path.splitext(os.path.basename(image_path))
 
     # create crops dir
     crops_dir = os.path.join(output_dir, file_name + "_crops")
@@ -194,34 +201,32 @@ def export_detected_regions(
 
 
 def export_extra_results(
-    image_path,
     image,
     regions,
     heatmaps,
+    file_name: str = "image",
     output_dir="output/",
     verticals=None,
     texts=None,
 ):
-    """ save text detection result one by one
+    """save text detection result one by one
     Args:
-        image_path (str): image file name
-        image (array): raw image context
+        image: path to the image to be processed or numpy array or PIL image
+        file_name (str): export image file name
         boxes (array): array of result file
             Shape: [num_detections, 4] for BB output / [num_detections, 4]
             for QUAD output
     Return:
         None
     """
-    image = np.array(image)
-
-    # make result file list
-    filename, file_ext = os.path.splitext(os.path.basename(image_path))
+    # read/convert image
+    image = read_image(image)
 
     # result directory
-    res_file = os.path.join(output_dir, filename + "_text_detection.txt")
-    res_img_file = os.path.join(output_dir, filename + "_text_detection.png")
-    text_heatmap_file = os.path.join(output_dir, filename + "_text_score_heatmap.png")
-    link_heatmap_file = os.path.join(output_dir, filename + "_link_score_heatmap.png")
+    res_file = os.path.join(output_dir, file_name + "_text_detection.txt")
+    res_img_file = os.path.join(output_dir, file_name + "_text_detection.png")
+    text_heatmap_file = os.path.join(output_dir, file_name + "_text_score_heatmap.png")
+    link_heatmap_file = os.path.join(output_dir, file_name + "_link_score_heatmap.png")
 
     # create output dir
     create_dir(output_dir)

@@ -22,7 +22,7 @@ def get_prediction(
 ):
     """
     Arguments:
-        image: image to be processed
+        image: path to the image to be processed or numpy array or PIL image
         output_dir: path to the results to be exported
         craft_net: craft net model
         refine_net: refine net model
@@ -42,6 +42,9 @@ def get_prediction(
          "times": elapsed times of the sub modules, in seconds}
     """
     t0 = time.time()
+
+    # read/convert image
+    image = image_utils.read_image(image)
 
     # resize
     img_resized, target_ratio, size_heatmap = image_utils.resize_aspect_ratio(
