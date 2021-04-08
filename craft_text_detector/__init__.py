@@ -106,7 +106,6 @@ class Craft:
         """
         Arguments:
             image_path: path to the image to be processed or numpy array or bytes
-            file_name: name image if be exported
         Output:
             {"masks": lists of predicted masks 2d as bool array,
             "boxes": list of coords of points of predicted boxes,
