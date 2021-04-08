@@ -102,10 +102,10 @@ class Craft:
         self.refine_net = None
         empty_cuda_cache()
 
-    def detect_text(self, src, file_name="box_text"):
+    def detect_text(self, image_path):
         """
         Arguments:
-            src: path to the image to be processed or numpy array or bytes
+            image_path: path to the image to be processed or numpy array or bytes
             file_name: name image if be exported
         Output:
             {"masks": lists of predicted masks 2d as bool array,
@@ -117,7 +117,7 @@ class Craft:
             "times": elapsed times of the sub modules, in seconds}
         """
         # load image and convert to valid format
-        image = read_image(src)
+        image = read_image(image_path)
 
         # perform prediction
         prediction_result = get_prediction(
@@ -140,6 +140,10 @@ class Craft:
             raise TypeError("crop_type can be only 'polys' or 'boxes'")
 
         # export if output_dir is given
+        if isinstance(image_path, str):
+            file_name = image_path
+        else:
+            file_name = "text_box"
         prediction_result["text_crop_paths"] = []
         if self.output_dir is not None:
             # export detected text regions
