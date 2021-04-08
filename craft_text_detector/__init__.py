@@ -102,10 +102,11 @@ class Craft:
         self.refine_net = None
         empty_cuda_cache()
 
-    def detect_text(self, src):
+    def detect_text(self, src, file_name="box_text"):
         """
         Arguments:
-            src: path to the image to be processed or numpy array or PIL image
+            src: path to the image to be processed or numpy array or bytes
+            file_name: name image if be exported
         Output:
             {"masks": lists of predicted masks 2d as bool array,
             "boxes": list of coords of points of predicted boxes,
@@ -143,7 +144,7 @@ class Craft:
         if self.output_dir is not None:
             # export detected text regions
             exported_file_paths = export_detected_regions(
-                image_path=image_path,
+                image_path=file_name,
                 image=image,
                 regions=regions,
                 output_dir=self.output_dir,
@@ -154,7 +155,7 @@ class Craft:
             # export heatmap, detection points, box visualization
             if self.export_extra:
                 export_extra_results(
-                    image_path=image_path,
+                    image_path=file_name,
                     image=image,
                     regions=regions,
                     heatmaps=prediction_result["heatmaps"],
