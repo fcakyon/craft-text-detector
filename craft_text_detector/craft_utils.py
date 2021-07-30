@@ -178,7 +178,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         rectangle = cv2.minAreaRect(np_contours)
         box = cv2.boxPoints(rectangle)
 
-        # boundary check due to minAreaRect can have out of range values 
+        # boundary check due to minAreaRect may have out of range values 
         # (see https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#ga3d476a3417130ae5154aea421ca7ead9)
         for p in box:
             if p[0] < 0:
