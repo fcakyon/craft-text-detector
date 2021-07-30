@@ -178,6 +178,18 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         rectangle = cv2.minAreaRect(np_contours)
         box = cv2.boxPoints(rectangle)
 
+        # boundary check due to minAreaRect may have out of range values 
+        # (see https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#ga3d476a3417130ae5154aea421ca7ead9)
+        for p in box:
+            if p[0] < 0:
+                p[0] = 0
+            if p[1] < 0:
+                p[1] = 0
+            if p[0] >= img_w:
+                p[0] = img_w
+            if p[1] >= img_h:
+                p[1] = img_h
+
         # align diamond-shape
         w, h = np.linalg.norm(box[0] - box[1]), np.linalg.norm(box[1] - box[2])
         box_ratio = max(w, h) / (min(w, h) + 1e-5)
