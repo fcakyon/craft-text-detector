@@ -34,7 +34,7 @@ setuptools.setup(
     url="https://github.com/fcakyon/craft_text_detector",
     packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=get_requirements(),
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",

@@ -2,8 +2,16 @@
 
 [![Downloads](https://pepy.tech/badge/craft-text-detector)](https://pepy.tech/project/craft-text-detector)
 [![PyPI version](https://badge.fury.io/py/craft-text-detector.svg)](https://badge.fury.io/py/craft-text-detector)
-[![Conda version](https://anaconda.org/fcakyon/craft-text-detector/badges/version.svg)](https://anaconda.org/fcakyon/craft-text-detector)
 [![CI](https://github.com/fcakyon/craft-text-detector/workflows/CI/badge.svg)](https://github.com/fcakyon/craft-text-detector/actions?query=event%3Apush+branch%3Amaster+is%3Acompleted+workflow%3ACI)
+
+<p align="center">
+<a href="https://pepy.tech/project/craft-text-detector"><img src="https://pepy.tech/badge/craft-text-detector" alt="downloads"></a>
+<a href="https://pypi.org/project/craft-text-detector"><img src="https://img.shields.io/pypi/pyversions/craft-text-detector" alt="downloads"></a>
+<br>
+<a href="https://github.com/fcakyon/craft-text-detector/actions"><img alt="Build status" src="https://github.com/fcakyon/craft-text-detector/actions/workflows/ci.yml/badge.svg"></a>
+<a href="https://badge.fury.io/py/craft-text-detector"><img src="https://badge.fury.io/py/craft-text-detector.svg" alt="PyPI version" height="20"></a>
+<a href="https://github.com/fcakyon/craft-text-detector/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/pypi/l/craft-text-detector"></a>
+</p>
 
 Packaged, Pytorch-based, easy to use, cross-platform version of the CRAFT text detector | [Paper](https://arxiv.org/abs/1904.01941) |
 
@@ -17,13 +25,7 @@ PyTorch implementation for CRAFT text detector that effectively detect text area
 
 ### Installation
 
-- Install using conda for Linux, Mac and Windows (preferred):
-
-```console
-conda install -c fcakyon craft-text-detector
-```
-
-- Install using pip for Linux and Mac:
+- Install using pip:
 
 ```console
 pip install craft-text-detector
