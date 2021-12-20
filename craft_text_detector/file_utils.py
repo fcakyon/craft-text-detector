@@ -151,12 +151,13 @@ def export_detected_region(image, poly, file_path, rectify=True):
     """
     if rectify:
         # rectify poly region
-        result = rectify_poly(image, poly)
+        result_rgb = rectify_poly(image, poly)
     else:
-        result = crop_poly(image, poly)
+        result_rgb = crop_poly(image, poly)
 
     # export corpped region
-    cv2.imwrite(file_path, result)
+    result_bgr = cv2.cvtColor(result_rgb, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(file_path, result_bgr)
 
 
 def export_detected_regions(
