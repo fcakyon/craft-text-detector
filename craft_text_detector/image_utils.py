@@ -19,12 +19,11 @@ def read_image(image):
 
     elif type(image) == np.ndarray:
         if len(image.shape) == 2:  # grayscale
-            img = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-        elif len(image.shape) == 3 and image.shape[2] == 3:  # BGRscale
+            img = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        elif len(image.shape) == 3 and image.shape[2] == 3:
             img = image
         elif len(image.shape) == 3 and image.shape[2] == 4:  # RGBAscale
             img = image[:, :, :3]
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     return img
 
