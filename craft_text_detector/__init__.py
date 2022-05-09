@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import os
+from typing import Optional
 
 import craft_text_detector.craft_utils as craft_utils
 import craft_text_detector.file_utils as file_utils
@@ -44,6 +45,8 @@ class Craft:
         long_size=1280,
         refiner=True,
         crop_type="poly",
+        weight_path_craft_net: Optional[str] = None,
+        weight_path_refine_net: Optional[str] = None,
     ):
         """
         Arguments:
@@ -72,22 +75,22 @@ class Craft:
         self.crop_type = crop_type
 
         # load craftnet
-        self.load_craftnet_model()
+        self.load_craftnet_model(weight_path_craft_net)
         # load refinernet if required
         if refiner:
-            self.load_refinenet_model()
+            self.load_refinenet_model(weight_path_refine_net)
 
-    def load_craftnet_model(self):
+    def load_craftnet_model(self, weight_path: Optional[str] = None):
         """
         Loads craftnet model
         """
-        self.craft_net = load_craftnet_model(self.cuda)
+        self.craft_net = load_craftnet_model(self.cuda, weight_path=weight_path)
 
-    def load_refinenet_model(self):
+    def load_refinenet_model(self, weight_path: Optional[str] = None):
         """
         Loads refinenet model
         """
-        self.refine_net = load_refinenet_model(self.cuda)
+        self.refine_net = load_refinenet_model(self.cuda, weight_path=weight_path)
 
     def unload_craftnet_model(self):
         """
