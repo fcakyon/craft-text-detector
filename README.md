@@ -3,6 +3,7 @@
 <p align="center">
 <a href="https://pepy.tech/project/craft-text-detector"><img src="https://pepy.tech/badge/craft-text-detector" alt="downloads"></a>
 <a href="https://pypi.org/project/craft-text-detector"><img src="https://img.shields.io/pypi/pyversions/craft-text-detector" alt="downloads"></a>
+<a href="https://twitter.com/fcakyon"><img src="https://img.shields.io/twitter/follow/fcakyon?color=blue&logo=twitter&style=flat" alt="fcakyon twitter">
 <br>
 <a href="https://github.com/fcakyon/craft-text-detector/actions"><img alt="Build status" src="https://github.com/fcakyon/craft-text-detector/actions/workflows/ci.yml/badge.svg"></a>
 <a href="https://badge.fury.io/py/craft-text-detector"><img src="https://badge.fury.io/py/craft-text-detector.svg" alt="PyPI version" height="20"></a>
