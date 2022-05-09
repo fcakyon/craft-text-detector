@@ -9,7 +9,7 @@ import craft_text_detector.image_utils as image_utils
 import craft_text_detector.predict as predict
 import craft_text_detector.torch_utils as torch_utils
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 
 
 __all__ = [
